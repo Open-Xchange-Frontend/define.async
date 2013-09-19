@@ -1,10 +1,10 @@
 define.async
 ============
 
-AMD-compatible define that waits for module initialization
+AMD-compatible define that waits for module initialization.
 
-### Dependencies
-Just needs jQuery's $.Deferred(). Never tried other implementations yet. 
+### Benefit
+If a module needs initial data to work properly, the interface usually becomes asynchronous in order to fetch data first. Alternatively, the module must be initialized first which moves complexity outside of the module. By using define.async() you don't need to worry about the inner workings of a module plus the interface stays synchronous and, therefore, is easier to use, test, and document.
 
 ### Usage
 
@@ -30,5 +30,6 @@ define.async('test', [], function () {
 });
 ```
 
-### Benefit
-If a module needs initial data to work properly, the interface usually becomes asynchronous in order to fetch data first. Alternatively, the module must be initialized first which moves complexity outside of the module. By using define.async() you don't need to worry about the inner workings of a module plus the interface stays synchronous and, therefore, is easier to use, test, and document.
+### Dependencies
+Just needs jQuery's $.Deferred(). Never tried other implementations yet. 
+
