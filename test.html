@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<title>define.async test</title>
+<script src="require.js"></script>
+<script src="async.js"></script>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script>
+
+function log(str) {
+    $('#log').append($('<div>').text(str));
+}
+
+function test(id, actual, expected) {
+    if (actual !== expected) {
+        log(id + '. Nope. Actual: ' + actual + ' Expected: ' + expected);
+    } else {
+        log(id + '. Yep.');
+    }
+}
+
+define('dep', function () {
+    return 'yeah';
+});
+
+define.async('test', ['dep'], function (dep) {
+
+    // no data in the beginning
+    var data = {};
+
+    // common module definition but we don't return this
+    var module = {
+        a: function () {
+            return dep;
+        },
+        b: function () {
+            return data;
+        }
+    };
+
+    // load data
+    return $.ajax({ url: 'test.json' }).then(function (response) {
+        data = response;
+        $('h1').text('resolved');
+        return module;
+    });
+});
+
+$(function () {
+
+    var text, module;
+
+    test('define is a function', typeof window.define, 'function');
+    test('define.async() is a function', typeof window.define.async, 'function');
+
+    text = $('h1').text();
+    test('module is unresolved', text, 'unresolved');
+
+    require(['test'], function (module) {
+
+        text = $('h1').text();
+        test('module is resolved', text, 'resolved');
+        test('module is defined', module !== undefined, true);
+        test('module has proper dependency a()', typeof module.a, 'function');
+        test('dependency returns proper value', module.a(), 'yeah');
+        test('module has proper method b()', typeof module.b, 'function');
+        var data = module.b();
+        test('method b() returns data', data !== undefined, true);
+        test('method b() returns correct data', data.hello, 'world');
+
+        $('h1').text('Done');
+    });
+});
+
+</script>
+</head>
+<body>
+<h1>unresolved</h1>
+<div id="log"></div>
+</body>
+</html>
